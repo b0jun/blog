@@ -56,9 +56,31 @@ export const write = async ctx => {
   GET /api/posts
 */
 export const list = async ctx => {
+  //query는 문자열이기 때문에 숫자로 변환해 주어야 합니다.
+  //값이 주어지지 않았다면 1을 기본으로 사용합니다.
+  const page = parseInt(ctx.query.page || "1", 10);
+
+  if (page < 1) {
+    ctx.status = 400;
+    return;
+  }
+
   try {
-    const posts = await Post.find().exec();
-    ctx.body = posts;
+    const posts = await Post.find()
+      .sort({ _id: -1 }) // 1: 오름차순, -1: 내림차순 [포스트역순으로 불러오기]
+      .limit(10) // 제한할 숫자 설정 [보이는 개수 제한]
+      .skip((page - 1) * 10) // 1페이지당 10개 [페이지 기능 구현]
+      .lean() //JSON 형태로 조회를 위해
+      .exec();
+    const postCount = await Post.countDocuments().exec();
+    ctx.set("Last-Page", Math.ceil(postCount / 10));
+    ctx.body = posts
+      //.map(post => post.toJSON()) - lean()함수를 통해 생략
+      .map(post => ({
+        ...post,
+        body:
+          post.body.length < 200 ? post.body : `${post.body.slice(0, 200)}...` // 200자 이상이면 ...[내용 길이 제한]
+      }));
   } catch (e) {
     ctx.throw(500, e);
   }
