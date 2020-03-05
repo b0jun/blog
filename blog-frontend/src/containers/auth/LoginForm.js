@@ -44,16 +44,22 @@ const LoginForm = ({ history }) => {
       console.log("오류 발생");
       console.log(authError);
       setError("로그인 실패");
+      return;
     }
     if (auth) {
       console.log("로그인 성공");
-      console.log(check());
+      dispatch(check());
     }
   }, [auth, authError, dispatch]);
 
   useEffect(() => {
     if (user) {
-      history.pushState("/");
+      history.push("/");
+      try {
+        localStorage.setItem("user", JSON.stringify(user));
+      } catch (e) {
+        console.log("localStroage is not working");
+      }
     }
   }, [history, user]);
 
