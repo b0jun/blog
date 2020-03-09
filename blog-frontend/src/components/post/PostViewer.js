@@ -25,7 +25,7 @@ const PostContent = styled.div`
   color: ${palette.gray[8]};
 `;
 
-const PostViewer = ({ post, error, loading }) => {
+const PostViewer = ({ post, error, loading, actionButtons, ownPost }) => {
   // 에러 발생 시
   if (error) {
     if (error.response && error.response.status === 404) {
@@ -51,6 +51,7 @@ const PostViewer = ({ post, error, loading }) => {
         />
         <Tags tags={tags} />
       </PostHead>
+      {ownPost && actionButtons}
       {/* 리액트에선 HTML을 그대로 렌더링하는 형태로 JSX로 작성하면 HTML가 
         제대로 적용되지 않고 일반 텍스트 형태로 나타나 버린다.
         그래서 dangerouslySetInnerHTML 값을 설정해주었다. */}

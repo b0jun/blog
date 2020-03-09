@@ -15,3 +15,12 @@ export const listPosts = ({ page, username, tag }) => {
   // /api/posts?username=tester&page=2 와 같이 호출
   return client.get(`/api/posts?${queryString}`);
 };
+
+export const updatePost = ({ id, title, body, tags }) =>
+  client.patch(`/api/posts/${id}`, {
+    title,
+    body,
+    tags
+  });
+
+export const removePost = id => client.delete(`/api/posts/${id}`);
